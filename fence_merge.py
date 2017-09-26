@@ -26,7 +26,6 @@ def main():
 				fence_img = Image.open(FENCE);
 				fence_img = fence_img.convert('L')
 				# img = Image.blend(img, fence_img, 0.9)
-				# new_img=img.paste(fence_img)
 				img.paste(fence_img, (0, 0), fence_img)
 				img.save(PATH_TO_SAVE_GRAY_IMAGES+FENCED_IMAGE_PREFIX+str(i)+".png")
 				i=i+1
