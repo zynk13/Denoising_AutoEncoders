@@ -2,9 +2,9 @@
 import numpy
 import collections
 from tensorflow.python.framework import dtypes
-from PIL import Image
 import glob
 from pylab import *
+import matplotlib.image as mpimg
 
 class DataSet(object):
     """Dataset class object."""
@@ -69,14 +69,20 @@ def read_data_sets(train_dir, fake_data=False, one_hot=False,
                         dtype=dtypes.float64, reshape=True,
                         validation_size=5000):
     """Set the images and labels."""
-    num_training = 1000
-    num_validation = 400
-    num_test = 171
+    #Mnist
+    num_training = 12000
+    num_validation = 1000
+    num_test = 3384
+
+    # num_training = 1000
+    # num_validation = 400
+    # num_test = 171
 
     # all_images = numpy.load('./npy/grey.npy')
     all_images = []
     for filename in glob.glob('/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/dataset/gray/fenced/*.png'):
-        im=Image.open(filename)
+        # im=Image.open(filename)
+        im=mpimg.imread(filename)
         all_images.append(np.array(array(im)))
         
     # all_images = map(Image.open, glob('/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/dataset/gray/fenced/*.png'))
@@ -87,7 +93,7 @@ def read_data_sets(train_dir, fake_data=False, one_hot=False,
     print all_images.shape
     print "......."
 
-    train_labels_original = np.zeros(1571)
+    train_labels_original = np.zeros(16384)
     all_labels = numpy.asarray(range(0, len(train_labels_original)))
     all_labels = dense_to_one_hot(all_labels, len(all_labels))
 

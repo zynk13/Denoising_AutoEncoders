@@ -3,19 +3,40 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import math 
 import tensorflow as tf 
+import tensorflow.examples.tutorials.mnist.input_data as input_data 
 import dataset
- 
 #LOAD PACKAGES 
 print 'Path in the argument:', str(sys.argv[1])
 mnist = dataset.read_data_sets(str(sys.argv[1]), one_hot=True) 
+# mnist = input_data.read_data_sets("data/", one_hot=True) 
+
+
 trainimgs   = mnist.train.images 
-trainlabels = mnist.train.labels 
-testimgs    = mnist.test.images 
+print ("trainimgs")
+print (trainimgs.shape)
+
+# print ('Mnist train 1st image:',trainimgs.shape)
+# trainlabels = mnist.train.labels 
+# print ("trainlabels")
+# print (trainlabels.shape)
+testimgs    = mnist.test.images
+print ("testimgs")
+print (testimgs.shape)
 testlabels  = mnist.test.labels 
+print ("testlabels")
+print (testlabels.shape)
 ntrain      = trainimgs.shape[0] 
+print ("ntrain")
+print (ntrain)
 ntest       = testimgs.shape[0] 
+print ("ntest")
+print (ntest)
 dim         = trainimgs.shape[1] 
-nout        = trainlabels.shape[1] 
+print ("dim")
+print (dim)
+# nout        = trainlabels.shape[1] 
+# print ("nout") 
+# print (nout) 
 print ("Packages loaded") 
  
 #WEIGHT AND BIASES 
@@ -40,7 +61,7 @@ biases = {
     'bd1': tf.Variable(tf.random_normal([1],  stddev=0.1)) 
 } 
 def cae(_X, _W, _b, _keepprob): 
-    _input_r = tf.reshape(_X, shape=[-1, 256, 256, 1]) 
+    _input_r = tf.reshape(_X, shape=[-1, 28, 28, 1]) 
     # Encoder 
     _ce1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_input_r, _W['ce1'],strides=[1, 2, 2, 1],padding='SAME'),_b['be1']))
  
@@ -53,13 +74,13 @@ def cae(_X, _W, _b, _keepprob):
     _ce3 = tf.nn.dropout(_ce3, _keepprob) 
  
     # Decoder 
-    _cd3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_ce3, _W['cd3'],tf.stack([tf.shape(_X)[0], 64, 64, n2]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd3']))  
+    _cd3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_ce3, _W['cd3'],tf.stack([tf.shape(_X)[0], 7, 7, n2]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd3']))  
     _cd3 = tf.nn.dropout(_cd3, _keepprob) 
  
-    _cd2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd3, _W['cd2'],tf.stack([tf.shape(_X)[0], 128, 128, n1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd2']))  
+    _cd2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd3, _W['cd2'],tf.stack([tf.shape(_X)[0], 14, 14, n1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd2']))  
     _cd2 = tf.nn.dropout(_cd2, _keepprob) 
  
-    _cd1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd2, _W['cd1'] ,tf.stack([tf.shape(_X)[0], 256, 256, 1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd1']))  
+    _cd1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd2, _W['cd1'] ,tf.stack([tf.shape(_X)[0], 28, 28, 1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd1']))  
     _cd1 = tf.nn.dropout(_cd1, _keepprob) 
     _out = _cd1 
     return _out 
@@ -71,7 +92,9 @@ y = tf.placeholder(tf.float32, [None, dim])
 keepprob = tf.placeholder(tf.float32) 
 pred = cae(x, weights, biases, keepprob)
 #['out'] 
-cost = tf.reduce_sum(tf.square(cae(x, weights, biases, keepprob)- tf.reshape(y, shape=[-1, 256, 256, 1]))) 
+print "y is"
+print y
+cost = tf.reduce_sum(tf.square(cae(x, weights, biases, keepprob)- tf.reshape(y, shape=[-1, 28, 28, 1]))) 
 learning_rate = 0.001 
 optm = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 init = tf.global_variables_initializer()
@@ -80,43 +103,49 @@ print ("Functions ready")
 sess = tf.Session() 
 sess.run(init) 
 # mean_img = np.mean(mnist.train.images, axis=0) 
-mean_img = np.zeros((65536)) 
+mean_img = np.zeros((784)) 
 # Fit all training data 
 batch_size = 128 
-n_epochs   = 51
+n_epochs   = 31
  
 print("Strart training..") 
 for epoch_i in range(n_epochs): 
+    print ('in epoch -',epoch_i)
     for batch_i in range(mnist.train.num_examples // batch_size): 
+        print ('in batch_i -',batch_i)
         batch_xs, _ = mnist.train.next_batch(batch_size) 
         trainbatch = np.array([img - mean_img for img in batch_xs]) 
+        print ('trainbatch.shape -',trainbatch.shape)
+        
+        # trainbatch_noisy = trainbatch
         trainbatch_noisy = trainbatch + 0.3*np.random.randn( 
-            trainbatch.shape[0], 65536) 
-        # f, a = plt.subplots(2, 2, figsize=(10, 5))
-        # a[0][0].imshow(np.reshape(trainbatch[0], (256, 256))) 
-        # a[0][1].imshow(np.reshape(trainbatch[1], (256, 256))) 
+            trainbatch.shape[0], 784) 
 
-        # a[1][0].imshow(np.reshape(trainbatch_noisy[0], (256, 256))) 
-        # a[1][1].imshow(np.reshape(trainbatch_noisy[1], (256, 256))) 
+        print ('trainbatch_noisy.shape -',trainbatch_noisy.shape)
+        # f, a = plt.subplots(2, 2, figsize=(10, 5))
+        # a[0][0].imshow(np.reshape(trainbatch[0], (28, 28))) 
+        # a[0][1].imshow(np.reshape(trainbatch[1], (28, 28))) 
+
+        # a[1][0].imshow(np.reshape(trainbatch_noisy[0], (28, 28))) 
+        # a[1][1].imshow(np.reshape(trainbatch_noisy[1], (28, 28))) 
         # f.show()
         # plt.draw()
         # plt.show()
         sess.run(optm, feed_dict={x: trainbatch_noisy 
                                   , y: trainbatch, keepprob: 0.7}) 
-    print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs 
-        , sess.run(cost, feed_dict={x: trainbatch 
-                                    , y: trainbatch, keepprob: 1.}))) 
-    if (epoch_i % 10) == 0: 
+    print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs, sess.run(cost, feed_dict={x: trainbatch_noisy, y: trainbatch, keepprob: 1.}))) 
+    if (epoch_i % 5) == 0: 
         n_examples = 5 
         test_xs, _ = mnist.test.next_batch(n_examples) 
-        test_xs_noisy = test_xs + 0.3*np.random.randn(test_xs.shape[0], 65536) 
+        test_xs_noisy = test_xs + 0.3*np.random.randn(test_xs.shape[0], 784) 
+        # test_xs_noisy = test_xs
         recon = sess.run(pred, feed_dict={x: test_xs_noisy, keepprob: 1.}) 
         fig, axs = plt.subplots(2, n_examples, figsize=(15, 4)) 
         for example_i in range(n_examples): 
             axs[0][example_i].matshow(np.reshape( 
-                test_xs_noisy[example_i, :], (256, 256)) 
+                test_xs_noisy[example_i, :], (28, 28)) 
                 , cmap=plt.get_cmap('gray')) 
             axs[1][example_i].matshow(np.reshape( 
-                np.reshape(recon[example_i, ...], (65536,)) 
-                + mean_img, (256, 256)), cmap=plt.get_cmap('gray')) 
+                np.reshape(recon[example_i, ...], (784,)) 
+                + mean_img, (28, 28)), cmap=plt.get_cmap('gray')) 
         plt.show()
