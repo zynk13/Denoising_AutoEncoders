@@ -2,9 +2,22 @@
 import numpy
 import collections
 from tensorflow.python.framework import dtypes
-import glob
-from pylab import *
-import matplotlib.image as mpimg
+# import glob
+import io
+# from pylab import *
+import numpy as np 
+# from PIL import Image
+# import cv2
+# from array import array
+# import matplotlib.image as mpimg
+# from google.cloud import storage
+from StringIO import StringIO
+from tensorflow.python.lib.io import file_io
+
+
+# client = storage.Client()
+# bucket = client.get_bucket('denoisingbucket')
+
 
 class DataSet(object):
     """Dataset class object."""
@@ -65,35 +78,28 @@ class DataSet(object):
         return self._images[start:end], self._labels[start:end]
 
 
-def read_data_sets(train_dir, fake_data=False, one_hot=False,
+def read_data_sets(fake_data=False, one_hot=False,
                         dtype=dtypes.float64, reshape=True,
                         validation_size=5000):
     """Set the images and labels."""
+    print "Entry - read_data_sets"
     #Mnist
-    num_training = 12000
-    num_validation = 1000
-    num_test = 3384
+    # num_training = 12000
+    # num_validation = 1000
+    # num_test = 3384
 
-    # num_training = 1000
-    # num_validation = 400
-    # num_test = 171
+    num_training = 1000
+    num_validation = 400
+    num_test = 171
 
-    # all_images = numpy.load('./npy/grey.npy')
     all_images = []
-    for filename in glob.glob('/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/dataset/gray/fenced/*.png'):
-        # im=Image.open(filename)
-        im=mpimg.imread(filename)
-        all_images.append(np.array(array(im)))
-        
-    # all_images = map(Image.open, glob('/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/dataset/gray/fenced/*.png'))
-    # all_images=image_list
-    # all_images = Image.open("/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/fence/g_fence.png");
-    all_images=np.array(all_images)
-    all_images = all_images.reshape(all_images.shape[0],all_images.shape[1], all_images.shape[2], 1)
+    cloud_array_file = StringIO(file_io.read_file_to_string('gs://denoisingbucket/fenced/dataset_array.npy'))
+    # all_images=np.load("/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/conv_on_fencedata/dataset_array.npy")
+
+    all_images=np.load(cloud_array_file)
     print all_images.shape
     print "......."
-
-    train_labels_original = np.zeros(16384)
+    train_labels_original = np.zeros(1571)
     all_labels = numpy.asarray(range(0, len(train_labels_original)))
     all_labels = dense_to_one_hot(all_labels, len(all_labels))
 

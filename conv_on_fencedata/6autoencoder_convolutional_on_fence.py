@@ -5,11 +5,14 @@ import math
 import tensorflow as tf 
 import dataset
 
- #WEIGHT AND BIASES 
+#WEIGHT AND BIASES 
 n1 = 16 
 n2 = 32 
-n3 = 64 
-ksize = 5
+n3 = 64
+n4 = 128
+n5 = 256 
+n6 = 512 
+ksize = 5 
 
 def run_training(): 
     # Basic model parameters as external flags.
@@ -29,27 +32,34 @@ def run_training():
     dim         = trainimgs.shape[1] 
     nout        = trainlabels.shape[1] 
     print ("Packages loaded") 
-     
-    #WEIGHT AND BIASES 
-    n1 = 16 
-    n2 = 32 
-    n3 = 64 
-    ksize = 5 
+      
     weights = { 
-        'ce1': tf.Variable(tf.random_normal([ksize, ksize, 1, n1],stddev=0.1)), 
-        'ce2': tf.Variable(tf.random_normal([ksize, ksize, n1, n2],stddev=0.1)), 
-        'ce3': tf.Variable(tf.random_normal([ksize, ksize, n2, n3],stddev=0.1)), 
-        'cd3': tf.Variable(tf.random_normal([ksize, ksize, n2, n3],stddev=0.1)), 
-        'cd2': tf.Variable(tf.random_normal([ksize, ksize, n1, n2],stddev=0.1)), 
-        'cd1': tf.Variable(tf.random_normal([ksize, ksize, 1, n1],stddev=0.1)) 
+    'ce1': tf.Variable(tf.random_normal([ksize, ksize, 1, n1],stddev=0.1)), 
+    'ce2': tf.Variable(tf.random_normal([ksize, ksize, n1, n2],stddev=0.1)), 
+    'ce3': tf.Variable(tf.random_normal([ksize, ksize, n2, n3],stddev=0.1)), 
+    'ce4': tf.Variable(tf.random_normal([ksize, ksize, n3, n4],stddev=0.1)), 
+    'ce5': tf.Variable(tf.random_normal([ksize, ksize, n4, n5],stddev=0.1)), 
+    'ce6': tf.Variable(tf.random_normal([ksize, ksize, n5, n6],stddev=0.1)), 
+    'cd6': tf.Variable(tf.random_normal([ksize, ksize, n5, n6],stddev=0.1)), 
+    'cd5': tf.Variable(tf.random_normal([ksize, ksize, n4, n5],stddev=0.1)), 
+    'cd4': tf.Variable(tf.random_normal([ksize, ksize, n3, n4],stddev=0.1)), 
+    'cd3': tf.Variable(tf.random_normal([ksize, ksize, n2, n3],stddev=0.1)), 
+    'cd2': tf.Variable(tf.random_normal([ksize, ksize, n1, n2],stddev=0.1)), 
+    'cd1': tf.Variable(tf.random_normal([ksize, ksize, 1, n1],stddev=0.1)) 
     } 
     biases = { 
-        'be1': tf.Variable(tf.random_normal([n1], stddev=0.1)), 
-        'be2': tf.Variable(tf.random_normal([n2], stddev=0.1)), 
-        'be3': tf.Variable(tf.random_normal([n3], stddev=0.1)), 
-        'bd3': tf.Variable(tf.random_normal([n2], stddev=0.1)), 
-        'bd2': tf.Variable(tf.random_normal([n1], stddev=0.1)), 
-        'bd1': tf.Variable(tf.random_normal([1],  stddev=0.1)) 
+    'be1': tf.Variable(tf.random_normal([n1], stddev=0.1)), 
+    'be2': tf.Variable(tf.random_normal([n2], stddev=0.1)), 
+    'be3': tf.Variable(tf.random_normal([n3], stddev=0.1)), 
+    'be4': tf.Variable(tf.random_normal([n4], stddev=0.1)), 
+    'be5': tf.Variable(tf.random_normal([n5], stddev=0.1)), 
+    'be6': tf.Variable(tf.random_normal([n6], stddev=0.1)), 
+    'bd6': tf.Variable(tf.random_normal([n5], stddev=0.1)), 
+    'bd5': tf.Variable(tf.random_normal([n4], stddev=0.1)), 
+    'bd4': tf.Variable(tf.random_normal([n3], stddev=0.1)), 
+    'bd3': tf.Variable(tf.random_normal([n2], stddev=0.1)), 
+    'bd2': tf.Variable(tf.random_normal([n1], stddev=0.1)), 
+    'bd1': tf.Variable(tf.random_normal([1],  stddev=0.1)) 
     } 
      
     print ("Network ready") 
@@ -111,8 +121,7 @@ def run_training():
 def cae(_X, _W, _b, _keepprob): 
     _input_r = tf.reshape(_X, shape=[-1, 256, 256, 1]) 
     # Encoder 
-    _ce1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_input_r, _W['ce1'],strides=[1, 2, 2, 1],padding='SAME'),_b['be1']))
- 
+    _ce1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_input_r, _W['ce1'],strides=[1, 2, 2, 1],padding='SAME'),_b['be1'])) 
     _ce1 = tf.nn.dropout(_ce1, _keepprob) 
  
     _ce2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce1, _W['ce2'],strides=[1, 2, 2, 1],padding='SAME'),_b['be2']))  
@@ -120,9 +129,27 @@ def cae(_X, _W, _b, _keepprob):
  
     _ce3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce2, _W['ce3'],strides=[1, 2, 2, 1],padding='SAME'),_b['be3']))  
     _ce3 = tf.nn.dropout(_ce3, _keepprob) 
+
+    _ce4 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce3, _W['ce4'],strides=[1, 2, 2, 1],padding='SAME'),_b['be4']))  
+    _ce4 = tf.nn.dropout(_ce4, _keepprob) 
+
+    _ce5 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce4, _W['ce5'],strides=[1, 2, 2, 1],padding='SAME'),_b['be5']))  
+    _ce5 = tf.nn.dropout(_ce5, _keepprob) 
+
+    _ce6 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce5, _W['ce6'],strides=[1, 2, 2, 1],padding='SAME'),_b['be6']))  
+    _ce6 = tf.nn.dropout(_ce6, _keepprob) 
  
     # Decoder 
-    _cd3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_ce3, _W['cd3'],tf.stack([tf.shape(_X)[0], 64, 64, n2]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd3']))  
+    _cd6 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_ce6, _W['cd6'],tf.stack([tf.shape(_X)[0], 8, 8, n5]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd6']))  
+    _cd6 = tf.nn.dropout(_cd6, _keepprob) 
+    
+    _cd5 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd6, _W['cd5'],tf.stack([tf.shape(_X)[0], 16, 16, n4]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd5']))  
+    _cd5 = tf.nn.dropout(_cd5, _keepprob) 
+    
+    _cd4 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd5, _W['cd4'],tf.stack([tf.shape(_X)[0], 32, 32, n3]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd4']))  
+    _cd4 = tf.nn.dropout(_cd4, _keepprob) 
+
+    _cd3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd4, _W['cd3'],tf.stack([tf.shape(_X)[0], 64, 64, n2]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd3']))  
     _cd3 = tf.nn.dropout(_cd3, _keepprob) 
  
     _cd2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd3, _W['cd2'],tf.stack([tf.shape(_X)[0], 128, 128, n1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd2']))  
@@ -132,18 +159,8 @@ def cae(_X, _W, _b, _keepprob):
     _cd1 = tf.nn.dropout(_cd1, _keepprob) 
     _out = _cd1 
     return _out 
-
+    
 def main(_):
-    if __name__ == '__main__':
-    # Parse the input arguments for common Cloud ML Engine options
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--n1', help='Number of elements in layer 1')
-    parser.add_argument('--n2',help='Number of elements in layer 2')
-    parser.add_argument('--n3',help='Number of elements in layer 3')
-    args = parser.parse_args()
-    arguments = args.__dict__
-    train_model(**arguments)
-
     run_training()
 
 if __name__ == '__main__':
