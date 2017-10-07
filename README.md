@@ -1,6 +1,7 @@
 # Denoising_AutoEncoders
 
-Analysis and implementation of different types of Denoising AutoEncoders.
+Inpainting - Implement different types of denoising autoencoders that preserve the concerning information and nullify the effect of corruption applied to the same input (i.e) Dimensionality reduction via noise removal.
+
 
 ### Requirements
 - numpy
