@@ -19,17 +19,25 @@ from skimage import io, exposure, img_as_uint, img_as_float
 # from StringIO import StringIO
 # from tensorflow.python.lib.io import file_io
 
-img_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/carvana/temp.npy')
-temp_image=np.load(img_dir)
-print(temp_image.shape)
-print(temp_image.dtype)
+img_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/carvana/image_cuts.npy')
+output_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/output_cuts/')
+image_cuts_array=np.load(img_dir)
+
+i=0
+for image in image_cuts_array:
+	print(image.shape)
+	print(image.dtype)
+	image = image[:, :, 0]
+	matplotlib.image.imsave(output_dir+str(i)+'.jpg', image)
+	i+=1
 
 ####
-temp_image = temp_image[:, :, 0]
-# imgplot = plt.imshow(temp_image)
-print(temp_image.shape)
-matplotlib.image.imsave('sample_output.jpg', temp_image)
-# im = exposure.rescale_intensity(temp_image, out_range='float')
+
+# temp_image = temp_image[:, :, 0]
+# # imgplot = plt.imshow(temp_image)
+# print(temp_image.shape)
+# matplotlib.image.imsave('sample_output.jpg', temp_image)
+# # im = exposure.rescale_intensity(temp_image, out_range='float')
 # im = img_as_uint(im)
 # io.imsave('test_16bit.png', im)
 ####

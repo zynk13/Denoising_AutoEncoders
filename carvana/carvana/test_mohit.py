@@ -81,14 +81,15 @@ if __name__ == "__main__":
     print("DEBUG: ", np.min(pred.flatten()))
     print("DEBUG: ", pred.shape)
     print("DEBUG - pred[1]: ", pred[1])
-    temp=pred[1]
-    print("DEBUG - temp.shape: ", temp.shape)
-    print("DEBUG - temp: ", temp)
-    np.save('temp.npy', temp)
-
+    # temp=pred[1]
+    # print("DEBUG - temp.shape: ", temp.shape)
+    # print("DEBUG - temp: ", temp)
+    # np.save('temp.npy', temp)
+    np.save('image_cuts.npy',pred)
     # # im = Image.fromarray(np.uint8(temp*255))
     # # im.save()
     # imgplot = plt.imshow(temp)
+
     sys.exit()
 
     print("DEBUG: prediction takes %2f to proceed..." % (time.time()-now))
