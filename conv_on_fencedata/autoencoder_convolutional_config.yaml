@@ -1,0 +1,27 @@
+trainingInput:
+  hyperparameters:
+    goal: MINIMIZE
+    hyperparameterMetricTag: accuracy
+    maxTrials: 10
+    maxParallelTrials: 1
+    params:
+      - parameterName: n1
+        type: INTEGER
+        minValue: 16
+        maxValue: 64
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: n_epochs
+        type: INTEGER
+        minValue: 200
+        maxValue: 1000
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: batch_size
+        type: INTEGER
+        minValue: 128
+        maxValue: 128
+        scaleType: UNIT_LINEAR_SCALE
+      - parameterName: ksize
+        type: INTEGER
+        minValue: 3
+        maxValue: 10
+        scaleType: UNIT_LINEAR_SCALE

@@ -92,11 +92,11 @@ def read_data_sets(fake_data=False, one_hot=False,
     num_validation = 400
     num_test = 171
 
-    all_images = []
-    cloud_array_file = StringIO(file_io.read_file_to_string('gs://denoisingbucket/fenced/dataset_array.npy'))
-    # all_images=np.load("/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/conv_on_fencedata/dataset_array.npy")
+    # all_images = []
+    # cloud_array_file = StringIO(file_io.read_file_to_string('gs://denoisingbucket/fenced/dataset_array.npy'))
+    all_images=np.load("/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/conv_on_fencedata/dataset_array.npy")
 
-    all_images=np.load(cloud_array_file)
+    # all_images=np.load(cloud_array_file)
     print all_images.shape
     print "......."
     train_labels_original = np.zeros(1571)

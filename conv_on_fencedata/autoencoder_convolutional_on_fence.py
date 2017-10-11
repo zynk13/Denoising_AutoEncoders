@@ -1,15 +1,24 @@
 import sys
-# import matplotlib.pyplot as plt 
 import numpy as np 
 import math 
 import tensorflow as tf 
 import dataset
 
- #WEIGHT AND BIASES 
-n1 = 16 
-n2 = 32 
-n3 = 64 
-ksize = 5
+import argparse
+
+#WEIGHT AND BIASES 
+# n1 = 16 
+# n2 = 32 
+# n3 = 64 
+# ksize = 5
+# batch_size = 128 
+# n_epochs   = 251
+n1 = 0
+n2 = 0
+n3 = 0
+ksize = 0
+batch_size = 0
+n_epochs   = 0
 
 def run_training(): 
     # Basic model parameters as external flags.
@@ -30,11 +39,6 @@ def run_training():
     nout        = trainlabels.shape[1] 
     print ("Packages loaded") 
      
-    #WEIGHT AND BIASES 
-    n1 = 16 
-    n2 = 32 
-    n3 = 64 
-    ksize = 5 
     weights = { 
         'ce1': tf.Variable(tf.random_normal([ksize, ksize, 1, n1],stddev=0.1)), 
         'ce2': tf.Variable(tf.random_normal([ksize, ksize, n1, n2],stddev=0.1)), 
@@ -69,9 +73,7 @@ def run_training():
     sess.run(init) 
     # mean_img = np.mean(mnist.train.images, axis=0) 
     mean_img = np.zeros((65536)) 
-    # Fit all training data 
-    batch_size = 128 
-    n_epochs   = 251
+    
      
     print("Start training..") 
     for epoch_i in range(n_epochs): 
@@ -91,7 +93,17 @@ def run_training():
             # plt.draw()
             # plt.show()
             sess.run(optm, feed_dict={x: trainbatch_noisy, y: trainbatch, keepprob: 0.7}) 
-        print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs, sess.run(cost, feed_dict={x: trainbatch, y: trainbatch, keepprob: 1.}))) 
+        cost_val=sess.run(cost, feed_dict={x: trainbatch, y: trainbatch, keepprob: 1.})
+        print "The cost is"
+        print cost_val
+        cost_in_percent=cost_val/10000
+        accuracy=100-cost_in_percent
+        print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs, cost_val)) 
+        # This line is for the hyperparameter tuning. The cloudml always checks the summaries. Also you just add summary like this then cloudML would see it.
+        print ("accuracy-",accuracy)
+        tf.summary.scalar('accuracy', accuracy)
+
+
         # if (epoch_i % 50) == 0: 
         #     n_examples = 5 
         #     test_xs, _ = mnist.test.next_batch(n_examples) 
@@ -133,18 +145,32 @@ def cae(_X, _W, _b, _keepprob):
     _out = _cd1 
     return _out 
 
-def main(_):
-    if __name__ == '__main__':
+
+if __name__ == '__main__':
     # Parse the input arguments for common Cloud ML Engine options
     parser = argparse.ArgumentParser()
     parser.add_argument('--n1', help='Number of elements in layer 1')
-    parser.add_argument('--n2',help='Number of elements in layer 2')
-    parser.add_argument('--n3',help='Number of elements in layer 3')
+    parser.add_argument('--n_epochs', help='Number of epochs')
+    parser.add_argument('--batch_size', help='Number of batch_size')
+    parser.add_argument('--ksize',help='Kernel size')
     args = parser.parse_args()
     arguments = args.__dict__
-    train_model(**arguments)
+    print "Hypertune arguments"
+    print arguments
+    n1 = int(arguments["n1"] )
+    n2 = n1 * 2 
+    n3 = n2 * 2
+    ksize = int(arguments["ksize"])
+    batch_size = int(arguments["batch_size"])
+    n_epochs   = int(arguments["n_epochs"])
+
+    print "Accepted arguments"
+    print ("n1",n1)
+    print ("n2",n2)
+    print ("n3",n3)
+
+    print ("ksize",ksize)
+    print ("batch_size",batch_size)
+    print ("n_epochs",n_epochs)
 
     run_training()
-
-if __name__ == '__main__':
-    tf.app.run()
