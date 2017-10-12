@@ -1,18 +1,11 @@
-## Intro
-Baseline solutions to Kaggle Carvana Image Segmentation Project.
+## CSE 676 - DEEP LEARNING
+A 6 Layered Denoising Auto Encoder implemented to remove the background of an image.
 
-Link: https://www.kaggle.com/c/carvana-image-masking-challenge
-
-## Dependencies
-- Python 3
-- numpy
-- keras >= 2.0.3
-- tensorflow >= 1.0.1
+Inspiration - https://www.kaggle.com/c/carvana-image-masking-challenge
 
 ## Execution
 ```
-$ python train.py
-usage: python train.py [--train_imdir TRAIN_DIRECTORY] [--train_maskdir TRAIN_MASK_DIRECTORY] [--target_size IMAGE_SIZE]
+python3 denoiser_train.py [--train_imdir TRAIN_DIRECTORY] [--train_maskdir TRAIN_MASK_DIRECTORY] [--target_size IMAGE_SIZE]
                      [--grayscale GRAYSCALE] [batch_size BATCH_SIZE] [epochs NUM_EPOCH] [gpu %GPU] [gpus GPUS]
 
 optional arguments:
@@ -33,5 +26,10 @@ optional arguments for neural network model:
     --gpus GPUS                             which GPU to use (default: None)
 ```
 
-## RESULTS
-on a NVIDIA 1180T GPU, the network was able to achieve ~0.97 train score and ~0.90 valid score
+## Dependencies
+- Python 3
+- numpy
+- PIL
+- Matplotlib
+- keras >= 2.0.3
+- tensorflow >= 1.0.1
