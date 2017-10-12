@@ -19,7 +19,6 @@ def create_args():
     return parser.parse_args()
 
 on_amax = True
-debug_mode = False
 
 img_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/test')
 
@@ -31,8 +30,6 @@ print (".....fn_dict.....")
 print (fn_dict)
 
 steps = ceil(len(total_fns)/BATCH_SIZE)
-if debug_mode:
-    steps = 50
 
 
 if __name__ == "__main__":
@@ -67,10 +64,7 @@ if __name__ == "__main__":
     print ("TARGET_SIZE",TARGET_SIZE)
     print ("BATCH_SIZE",BATCH_SIZE)
     test_gen = DataIterator(fns=total_fns, fn_dict=fn_dict, target_size=TARGET_SIZE, test=True, batch_size=BATCH_SIZE)
-    print ("test_gen....")
-    print (test_gen)
-    # test_gen = DataGenerator(fns=total_fns, fn_dict=fn_dict, target_size=TARGET_SIZE, test=True, batch_size=BATCH_SIZE)
-    # test_gen = data_gen(total_fns, fn_dict, target_size=TARGET_SIZE, test=True, batch_size=BATCH_SIZE)
+    
 
     print("predicting...")
     now = time.time()
@@ -81,38 +75,5 @@ if __name__ == "__main__":
     print("DEBUG: ", np.min(pred.flatten()))
     print("DEBUG: ", pred.shape)
     print("DEBUG - pred[1]: ", pred[1])
-    # temp=pred[1]
-    # print("DEBUG - temp.shape: ", temp.shape)
-    # print("DEBUG - temp: ", temp)
-    # np.save('temp.npy', temp)
     np.save('image_cuts.npy',pred)
-    # # im = Image.fromarray(np.uint8(temp*255))
-    # # im.save()
-    # imgplot = plt.imshow(temp)
-
-    sys.exit()
-
     print("DEBUG: prediction takes %2f to proceed..." % (time.time()-now))
-
-    out = []
-    for i, a1 in enumerate(pred):
-        # print("a1")
-        # print(a1)
-        # print("rle_encode(a1)")
-        # print(rle_encode(a1))
-        out.append(rle_encode(a1))
-        print("{} images processed...".format(i))
-
-    # use multiprocessing for the list of images
-    pool = ThreadPool(6)
-    now = time.time()
-    out = pool.map(resize_mask_matrix_encode, list(pred))
-    pool.close()
-    pool.join()
-    print("DEBUG: conversion takes %2f to proceed..." % (time.time() - now))
-
-    out = list(zip(total_fns, out))
-    out = pd.DataFrame(out)
-    out.columns = ['img', 'rle_mask']
-    out.to_csv(os.path.join(os.path.dirname(submodel), 'submission.csv'), index=False)
-    print("successfully written to {}".format(os.path.join(os.path.dirname(submodel), 'submission.csv')))

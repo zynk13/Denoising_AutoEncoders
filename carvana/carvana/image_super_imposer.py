@@ -4,28 +4,37 @@ import os
 import pylab as pl
 import numpy as np
 import glob
+import image_cuts_producer
+import test_image_resizer
 
-output_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/')
-img_output_cuts_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/output_cuts/')
-img_output_original_resized_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/output_original_resized/')
+def image_super_imposer():
 
-img_output_cuts_dir_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_cuts_dir, '*.jpg'))]
-img_output_original_resized_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_original_resized_dir, '*.jpg'))]
+	output_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/')
+	img_output_cuts_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/output_cuts/')
+	img_output_original_resized_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/output/output_original_resized/')
 
-for i in range(len(img_output_cuts_dir_fns)):
-	print(i)
-	
-	print(img_output_cuts_dir+img_output_cuts_dir_fns[i]+".jpg")
-	image_cut=img_output_cuts_dir+img_output_cuts_dir_fns[i]+".jpg"
+	img_output_cuts_dir_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_cuts_dir, '*.jpg'))]
+	img_output_original_resized_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_original_resized_dir, '*.jpg'))]
 
-	print(img_output_original_resized_dir+img_output_original_resized_fns[i]+".jpg")
-	image_original=img_output_original_resized_dir+img_output_original_resized_fns[i]+".jpg"
+	for i in range(len(img_output_cuts_dir_fns)):
+		print(i)
 		
-	background = Image.open(image_original)
-	overlay = Image.open(image_cut)
+		print(img_output_cuts_dir+img_output_cuts_dir_fns[i]+".jpg")
+		image_cut=img_output_cuts_dir+img_output_cuts_dir_fns[i]+".jpg"
 
-	background = background.convert("RGBA")
-	overlay = overlay.convert("RGBA")
+		print(img_output_original_resized_dir+img_output_original_resized_fns[i]+".jpg")
+		image_original=img_output_original_resized_dir+img_output_original_resized_fns[i]+".jpg"
+			
+		background = Image.open(image_original)
+		overlay = Image.open(image_cut)
 
-	new_img = Image.blend(background, overlay, 0.5)
-	new_img.save(output_dir+img_output_original_resized_fns[i]+".png","PNG")
+		background = background.convert("RGBA")
+		overlay = overlay.convert("RGBA")
+
+		new_img = Image.blend(background, overlay, 0.5)
+		new_img.save(output_dir+img_output_original_resized_fns[i]+".png","PNG")
+
+if __name__ == "__main__":
+	image_cuts_producer.image_cuts_producer()
+	test_image_resizer.test_image_resizer()
+	image_super_imposer()
