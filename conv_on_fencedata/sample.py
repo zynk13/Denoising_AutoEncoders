@@ -134,7 +134,7 @@ for epoch_i in range(n_epochs):
         sess.run(optm, feed_dict={x: trainbatch_noisy 
                                   , y: trainbatch, keepprob: 0.7}) 
     print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs, sess.run(cost, feed_dict={x: trainbatch_noisy, y: trainbatch, keepprob: 1.}))) 
-    if (epoch_i % 5) == 0: 
+    if (epoch_i % 5
         n_examples = 5 
         test_xs, _ = mnist.test.next_batch(n_examples) 
         test_xs_noisy = test_xs + 0.3*np.random.randn(test_xs.shape[0], 784) 

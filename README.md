@@ -7,3 +7,4 @@ Inpainting - Implement different types of denoising autoencoders that preserve t
 - numpy
 - tensorflow
 - matplotlib
+- PIL

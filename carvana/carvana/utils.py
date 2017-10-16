@@ -12,7 +12,7 @@ from keras.preprocessing.image import load_img
 from config import ORIGIN_SHAPE
 from multiprocessing.dummy import Pool as ThreadPool
 
-# threadsafe generator
+
 class DataIterator(object):
     def __init__(self,fns, fn_dict, target_size=(256,256), grayscale=True, batch_size=2, data_aug=False, shuffle=False,
              test=False):
