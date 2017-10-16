@@ -12,4 +12,9 @@ A simple neural network that takes in 28x28 noisy mnist digits as inputs, encode
 # OPTIMIZER 
  optmizer = tf.train.RMSPropOptimizer(0.01).minimize(cost) 
 ```
+##
+Images after training the network for 100 epochs
 
+![Denoising AutoEncoder - Simple](/type1_simple_on_mnist/output/100_original_input.png?raw=true "Denoising AutoEncoder - Simple")
+![Denoising AutoEncoder - Simple](/type1_simple_on_mnist/output/100_noisy_input.png?raw=true "Denoising AutoEncoder - Simple")
+![Denoising AutoEncoder - Simple](/type1_simple_on_mnist/output/100_reconstructed.png?raw=true "Denoising AutoEncoder - Simple")
