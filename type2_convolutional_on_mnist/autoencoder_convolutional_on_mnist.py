@@ -16,7 +16,7 @@ dim         = trainimgs.shape[1]
 nout        = trainlabels.shape[1] 
 print ("Packages loaded") 
  
-#WEIGHT AND BIASES 
+# NETWORK ARCHITECTURE PARAMETERS AND HYPERPARAMETERS
 n1 = 16 
 n2 = 32 
 n3 = 64 
@@ -62,51 +62,55 @@ def cae(_X, _W, _b, _keepprob):
     _out = _cd1 
     return _out 
  
-print ("Network ready") 
- 
-x = tf.placeholder(tf.float32, [None, dim]) 
-y = tf.placeholder(tf.float32, [None, dim]) 
-keepprob = tf.placeholder(tf.float32) 
-pred = cae(x, weights, biases, keepprob)
-#['out'] 
-cost = tf.reduce_sum(tf.square(cae(x, weights, biases, keepprob)- tf.reshape(y, shape=[-1, 28, 28, 1]))) 
-learning_rate = 0.001 
-optm = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-init = tf.global_variables_initializer()
-print ("Functions ready")
- 
-sess = tf.Session() 
-sess.run(init) 
-# mean_img = np.mean(mnist.train.images, axis=0) 
-mean_img = np.zeros((784)) 
-# Fit all training data 
-batch_size = 128 
-n_epochs   = 5 
- 
-print("Strart training..") 
-for epoch_i in range(n_epochs): 
-    for batch_i in range(mnist.train.num_examples // batch_size): 
-        batch_xs, _ = mnist.train.next_batch(batch_size) 
-        trainbatch = np.array([img - mean_img for img in batch_xs]) 
-        trainbatch_noisy = trainbatch + 0.3*np.random.randn( 
-            trainbatch.shape[0], 784) 
-        sess.run(optm, feed_dict={x: trainbatch_noisy 
-                                  , y: trainbatch, keepprob: 0.7}) 
-    print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs 
-        , sess.run(cost, feed_dict={x: trainbatch_noisy 
-                                    , y: trainbatch, keepprob: 1.}))) 
-    if (epoch_i % 1) == 0: 
-        n_examples = 5 
-        test_xs, _ = mnist.test.next_batch(n_examples) 
-        test_xs_noisy = test_xs + 0.3*np.random.randn( 
-            test_xs.shape[0], 784) 
-        recon = sess.run(pred, feed_dict={x: test_xs_noisy, keepprob: 1.}) 
-        fig, axs = plt.subplots(2, n_examples, figsize=(15, 4)) 
-        for example_i in range(n_examples): 
-            axs[0][example_i].matshow(np.reshape( 
-                test_xs_noisy[example_i, :], (28, 28)) 
-                , cmap=plt.get_cmap('gray')) 
-            axs[1][example_i].matshow(np.reshape( 
-                np.reshape(recon[example_i, ...], (784,)) 
-                + mean_img, (28, 28)), cmap=plt.get_cmap('gray')) 
-        plt.show()
+def main():
+    print ("Network, weights and biases initialized.") 
+    x = tf.placeholder(tf.float32, [None, dim]) 
+    y = tf.placeholder(tf.float32, [None, dim]) 
+    keepprob = tf.placeholder(tf.float32) 
+    pred = cae(x, weights, biases, keepprob)
+    #['out'] 
+    cost = tf.reduce_sum(tf.square(cae(x, weights, biases, keepprob)- tf.reshape(y, shape=[-1, 28, 28, 1]))) 
+    learning_rate = 0.001 
+    optm = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+    init = tf.global_variables_initializer()
+     
+    sess = tf.Session() 
+    sess.run(init) 
+    # mean_img = np.mean(mnist.train.images, axis=0) 
+    mean_img = np.zeros((784)) 
+    # Fit all training data 
+    batch_size = 128 
+    n_epochs   = 5 
+     
+    print("Strart training") 
+    for epoch_i in range(n_epochs): 
+        for batch_i in range(mnist.train.num_examples // batch_size): 
+            batch_xs, _ = mnist.train.next_batch(batch_size) 
+            trainbatch = np.array([img - mean_img for img in batch_xs]) 
+            trainbatch_noisy = trainbatch + 0.3*np.random.randn( 
+                trainbatch.shape[0], 784) 
+            sess.run(optm, feed_dict={x: trainbatch_noisy 
+                                      , y: trainbatch, keepprob: 0.7}) 
+        print ("[%02d/%02d] cost: %.4f" % (epoch_i, n_epochs 
+            , sess.run(cost, feed_dict={x: trainbatch_noisy 
+                                        , y: trainbatch, keepprob: 1.}))) 
+        if (epoch_i % 1) == 0: 
+            n_examples = 5 
+            test_xs, _ = mnist.test.next_batch(n_examples) 
+            test_xs_noisy = test_xs + 0.3*np.random.randn( 
+                test_xs.shape[0], 784) 
+            recon = sess.run(pred, feed_dict={x: test_xs_noisy, keepprob: 1.}) 
+            fig, axs = plt.subplots(2, n_examples, figsize=(15, 4)) 
+            for example_i in range(n_examples): 
+                axs[0][example_i].matshow(np.reshape( 
+                    test_xs_noisy[example_i, :], (28, 28)) 
+                    , cmap=plt.get_cmap('gray')) 
+                axs[1][example_i].matshow(np.reshape( 
+                    np.reshape(recon[example_i, ...], (784,)) 
+                    + mean_img, (28, 28)), cmap=plt.get_cmap('gray')) 
+            fig = plt.gcf()
+            fig.savefig(str(epoch_i)+'plot.png', dpi=100)
+            plt.show()
+        
+if __name__ == '__main__':
+    main()
