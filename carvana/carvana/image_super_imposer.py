@@ -15,7 +15,16 @@ def image_super_imposer():
 
 	img_output_cuts_dir_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_cuts_dir, '*.jpg'))]
 	img_output_original_resized_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_output_original_resized_dir, '*.jpg'))]
-
+	print ("/////////")
+	# img_output_cuts_dir_fns = list(map(int, img_output_cuts_dir_fns))
+	
+	# img_output_cuts_dir_fns=list(map(lambda x: x + 1, img_output_cuts_dir_fns))
+	# img_output_cuts_dir_fns=sorted(img_output_cuts_dir_fns)
+	print (img_output_cuts_dir_fns)
+	print ("/////////")
+	# img_output_original_resized_fns=sorted(sorted(img_output_original_resized_fns), key=str.upper)
+	print (img_output_original_resized_fns)
+	print ("/////////")
 	for i in range(len(img_output_cuts_dir_fns)):
 		print(i)
 		

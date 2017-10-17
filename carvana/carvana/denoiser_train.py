@@ -1,10 +1,10 @@
 import os, glob, cv2, argparse
 import numpy as np
-import tensorflow as tf
-from multiprocessing.dummy import Pool
-from datetime import datetime
 from utils import *
 from models import *
+from datetime import datetime
+import tensorflow as tf
+from multiprocessing.dummy import Pool
 from keras.optimizers import Adam, rmsprop
 from keras.callbacks import ModelCheckpoint, CSVLogger
 from math import ceil
@@ -46,30 +46,24 @@ if __name__ == "__main__":
                                                                 target_size[1], target_size[2])
     if not os.path.isdir(filepath_dir):
         os.makedirs(filepath_dir)
-    # filepath = filepath_dir + 'epoch-{epoch:02d}-{loss:.4f}-{dice_coef:.4f}-{val_loss:.4f}-{val_dice_coef:.4f}.hdf5'
     filepath = filepath_dir + 'best_model.hdf5'
 
     # construct fn dictionary
     total_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_dir, '*.jpg'))]
 
-    print ("..total_fns...",total_fns)
+    # print ("..total_fns...",total_fns)
     fn_dict = {fn: [os.path.join(img_dir, fn + '.jpg'), os.path.join(mask_dir, fn + '_mask.gif')] for fn in total_fns}
     # train/valid split
     np.random.seed(1)
     valid_fns = list(np.random.choice(total_fns, 300))
     train_fns = [x for x in total_fns if x not in valid_fns]
-
-    # normalize = normalize_data(train_fns, fn_dict, target_size)
-    normalize = None
-
     # load model and train    
     config = tf.ConfigProto()
     set_session(tf.Session(config=config))
 
     train_gen = data_gen(train_fns, fn_dict, shuffle=True)
     valid_gen = data_gen(valid_fns, fn_dict)
-    # model = SimpleCNN(target_size, normalize=normalize)
-    model = unet(target_size, normalize=normalize)
+    model = unet(target_size, normalize=None)
     checkpointer = ModelCheckpoint(filepath=filepath, verbose=1, save_best_only=True, monitor='val_dice_coef',
                                    mode='max')
     csvlogger = CSVLogger(filepath_dir + 'training.log')

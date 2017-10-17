@@ -12,12 +12,6 @@ from PIL import Image
 import sys
 
 
-def create_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu', type=float, default=1)
-    parser.add_argument('--gpus', type=str, default='cpu')
-    return parser.parse_args()
-
 on_amax = True
 
 img_dir = os.path.join(os.path.expanduser('~'), 'Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/test')
@@ -26,21 +20,17 @@ if on_amax:
     img_dir = '/Users/mohitakhakharia/Desktop/MarsWorkSpace/Denoising_AutoEncoders/carvana/test'
 total_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_dir, '*.jpg'))]
 fn_dict = {fn: [os.path.join(img_dir, fn + '.jpg')] for fn in total_fns}
-print (".....fn_dict.....")
-print (fn_dict)
+# print (".....fn_dict.....")
+# print (fn_dict)
 
 steps = ceil(len(total_fns)/BATCH_SIZE)
 
 
 if __name__ == "__main__":
-    args = create_args()
-    # configure gpu
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = args.gpu
-    config.gpu_options.visible_device_list = args.gpus
     set_session(tf.Session(config=config))
 
-    print("choose from...")
+    print("Welcome, choose a directory to load the model-")
     models = glob.glob('experiment/model*')
     for i,model in enumerate(models):
         print("{}-{}".format(i, model))
@@ -50,7 +40,7 @@ if __name__ == "__main__":
     submodels = glob.glob(os.path.join(models[i], '*.hdf5'))
     for j, submodel in enumerate(submodels):
         print("{}-{}".format(j, submodel))
-    i1 = int(input("choose pred model: "))
+    i1 = int(input("Choose the model that you need to use for prediction: "))
     if i1 in list(range(len(submodels))):
         submodel = submodels[i1]
     else:
@@ -65,8 +55,7 @@ if __name__ == "__main__":
     print ("BATCH_SIZE",BATCH_SIZE)
     test_gen = DataIterator(fns=total_fns, fn_dict=fn_dict, target_size=TARGET_SIZE, test=True, batch_size=BATCH_SIZE)
     
-
-    print("predicting...")
+    print("prediction in place...")
     now = time.time()
     pred = model.predict_generator(test_gen, steps=steps, verbose=1, workers=3)
 
@@ -74,6 +63,6 @@ if __name__ == "__main__":
     print("DEBUG: ", np.max(pred.flatten()))
     print("DEBUG: ", np.min(pred.flatten()))
     print("DEBUG: ", pred.shape)
-    print("DEBUG - pred[1]: ", pred[1])
+    # print("DEBUG - pred[1]: ", pred[1])
     np.save('image_cuts.npy',pred)
-    print("DEBUG: prediction takes %2f to proceed..." % (time.time()-now))
+    print("DEBUG: prediction took %2f seconds." % (time.time()-now))

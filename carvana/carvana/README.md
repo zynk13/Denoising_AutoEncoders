@@ -7,8 +7,7 @@ Inspiration - https://www.kaggle.com/c/carvana-image-masking-challenge
 ```
 ## Begin Training and save the model
 
-$ python3 denoiser_train.py [--train_imdir TRAIN_DIRECTORY] [--train_maskdir TRAIN_MASK_DIRECTORY] [--target_size IMAGE_SIZE]
-                     [--grayscale GRAYSCALE] [batch_size BATCH_SIZE]
+$ python3 denoiser_train.py [--train_imdir TRAIN_DIRECTORY] [--train_maskdir TRAIN_MASK_DIRECTORY]
 
 optional arguments:
     --train_imdir TRAIN_DIRECTORY           path to training images directory
@@ -23,7 +22,7 @@ $ python3 test.py
 usage: python test.py
 
 ## Superimpose masks on resized training images
-$python3 image_super_imposer.py
+$ python3 image_super_imposer.py
 ```
 
 ## Dependencies
@@ -31,5 +30,5 @@ $python3 image_super_imposer.py
 - numpy
 - PIL
 - Matplotlib
-- keras >= 2.0.3
-- tensorflow >= 1.0.1
+- keras = 2.0.3 [or above]
+- tensorflow > 1.0.1 [or above]
