@@ -23,8 +23,6 @@ def create_args():
     parser.add_argument('--grayscale', type=bool, default=True)
     parser.add_argument('--batch_size', type=int, default=2)
     parser.add_argument('--epochs', type=int, default=10)
-    parser.add_argument('--gpu', type=float, default=1)
-    parser.add_argument('--gpus', type=str, default=None)
     return parser.parse_args()
 
 
@@ -53,6 +51,8 @@ if __name__ == "__main__":
 
     # construct fn dictionary
     total_fns = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(img_dir, '*.jpg'))]
+
+    print ("..total_fns...",total_fns)
     fn_dict = {fn: [os.path.join(img_dir, fn + '.jpg'), os.path.join(mask_dir, fn + '_mask.gif')] for fn in total_fns}
     # train/valid split
     np.random.seed(1)
@@ -62,12 +62,9 @@ if __name__ == "__main__":
     # normalize = normalize_data(train_fns, fn_dict, target_size)
     normalize = None
 
-    # load model and train
-    if args.gpu:
-        config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = args.gpu
-        config.gpu_options.visible_device_list = args.gpus
-        set_session(tf.Session(config=config))
+    # load model and train    
+    config = tf.ConfigProto()
+    set_session(tf.Session(config=config))
 
     train_gen = data_gen(train_fns, fn_dict, shuffle=True)
     valid_gen = data_gen(valid_fns, fn_dict)

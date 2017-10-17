@@ -41,22 +41,17 @@ def cae(_X, _W, _b, _keepprob):
     _input_r = tf.reshape(_X, shape=[-1, 28, 28, 1]) 
     # Encoder 
     _ce1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_input_r, _W['ce1'],strides=[1, 2, 2, 1],padding='SAME'),_b['be1']))
- 
     _ce1 = tf.nn.dropout(_ce1, _keepprob) 
- 
     _ce2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce1, _W['ce2'],strides=[1, 2, 2, 1],padding='SAME'),_b['be2']))  
     _ce2 = tf.nn.dropout(_ce2, _keepprob) 
- 
     _ce3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(_ce2, _W['ce3'],strides=[1, 2, 2, 1],padding='SAME'),_b['be3']))  
     _ce3 = tf.nn.dropout(_ce3, _keepprob) 
  
     # Decoder 
     _cd3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_ce3, _W['cd3'],tf.stack([tf.shape(_X)[0], 7, 7, n2]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd3']))  
     _cd3 = tf.nn.dropout(_cd3, _keepprob) 
- 
     _cd2 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd3, _W['cd2'],tf.stack([tf.shape(_X)[0], 14, 14, n1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd2']))  
     _cd2 = tf.nn.dropout(_cd2, _keepprob) 
- 
     _cd1 = tf.nn.sigmoid(tf.add(tf.nn.conv2d_transpose(_cd2, _W['cd1'] ,tf.stack([tf.shape(_X)[0], 28, 28, 1]),strides=[1, 2, 2, 1],padding='SAME'),_b['bd1']))  
     _cd1 = tf.nn.dropout(_cd1, _keepprob) 
     _out = _cd1 
