@@ -2,18 +2,6 @@ from keras.models import Sequential, Model
 from keras.layers import Input, Conv2D, MaxPool2D, Conv2DTranspose, concatenate, Lambda
 
 
-def SimpleCNN(target_size, normalize=None):
-    y, x, channel = target_size
-    inp = Input((x,y,channel))
-    if normalize is None:
-        inputs1 = Lambda(lambda x: x/255.)(inp)
-    else:
-        inputs1 = Lambda(lambda x: x-normalize)(inp)
-    x = Conv2D(1,(1,1))(inputs1)
-    model = Model(inp, x)
-    return model
-
-
 def unet(target_size, normalize=None):
     y, x, channel = target_size
     inputs = Input((x, y, channel))
