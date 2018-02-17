@@ -6,7 +6,9 @@ from math import ceil
 from keras.backend.tensorflow_backend import set_session
 from utils import *
 from config import *
-import matplotlib.pyplot as plt
+import matplotlib
+# matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt  
 import matplotlib.image as mpimg
 from PIL import Image
 import sys
@@ -45,7 +47,7 @@ if __name__ == "__main__":
         submodel = submodels[i1]
     else:
         submodel = os.path.join(models[i], 'best_model.hdf5')
-
+    print("Loading selected model", submodel)
     model = keras.models.load_model(submodel, custom_objects={'dice_coef':dice_coef, 'bce_dc_loss':bce_dc_loss})
     print("model loaded for {}...".format(submodel))
 
