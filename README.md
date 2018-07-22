@@ -1,4 +1,4 @@
-# Image inpainting using Autoencoders
+# Image in-painting using Autoencoders
 
 De-noising - Used autoencoders to perform de-noising on corrupted images (manually added noise to images in the MNIST dataset)
 
