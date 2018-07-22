@@ -1,7 +1,8 @@
-# Denoising_AutoEncoders
+# Image inpainting using Autoencoders
 
-Inpainting - Implement different types of denoising autoencoders that preserve the concerning information and nullify the effect of corruption applied to the same input (i.e) Dimensionality reduction via noise removal.
+De-noising - Used autoencoders to perform de-noising on corrupted images (manually added noise to images in the MNIST dataset)
 
+Image masking - Used autoencoders to replace the background in images with cars with a green-screen (Carvana's Kaggle dataset)
 
 ### Requirements
 - numpy
